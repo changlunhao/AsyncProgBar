@@ -23,6 +23,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 
 public class AsyncProgBar extends Activity {
@@ -33,22 +34,22 @@ public class AsyncProgBar extends Activity {
 	private ProgressDialog mProgressDialog;
 	private MySQLiteOpenHelper dbHelper=null;
 	
-	  /* version必須大於等於1 */
+	  /* version */
 	  int version = 1;
 	  
-	  /* Table資料表 */
+	  /* Table name*/
 	  String tables[] = { "mytable" };
 	  
-	  /* 欄位名稱 */
+	  /* Table field */
 	  String fieldNames[][] =
 	  {
 	    { "f_id", "f_name", "f_file", "f_note" }
 	  };
 	  
-	  /* 欄位型態 */
+	  /* type*/
 	  String fieldTypes[][] =
 	  {
-	    { "INTEGER PRIMARY KEY AUTOINCREMENT", "text" , "text", "text"}
+	    { "INTEGER PRIMARY KEY AUTOINCREMENT", "text" , "bolb", "text"}
 	  };
 	  
 	  
@@ -57,6 +58,7 @@ public class AsyncProgBar extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.main);
 		mStartBtn = (Button) findViewById(R.id.startBtn);
 		mStartBtn.setOnClickListener(new OnClickListener() {
@@ -75,48 +77,48 @@ public class AsyncProgBar extends Activity {
 //		}
 	}
 	private void startDownload() {
-//		String url = "http://clh.myds.me/sample.avi";
-//		new DownloadFileAsync().execute(url);
+		String url = "http://clh.myds.me/sample.avi";
+		new DownloadFileAsync().execute(url);
 
-		final String savepath = AndroidLib.getExternalStoreageName(AsyncProgBar.this, null);
-		
-		//dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, null, null, version, tables, fieldNames, fieldTypes);
-		dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, savepath+"mydb.db", null, version, tables, fieldNames, fieldTypes);
-		 String f1[] = { "f_id", "f_name" };
-		 String aa ="3333";
-         String[] selectionArgs = { aa.toString() };
-	    /* SELECT f[] FROM tables[0] */
-		
-//		/* 呼叫select方法搜尋資料表 */
-//          Cursor c = dbHelper.select(tables[0], f1, "f_name=?", selectionArgs, null, null, null);
-//          String strRes = "";
-//          while (c.moveToNext())
-//          {
-//            strRes += c.getString(0) + "\n";
-//          }
-//          
-//          if(strRes == "")
-//          {
-        	  long ltimebase = SystemClock.uptimeMillis();
-        	  String s_id = String.valueOf(ltimebase);
-            /* 資料庫未找到餐廳名稱，新增它 */
-            String f2[] = {"f_id", "f_name", "f_file", "f_note"};
-            String v[] = { s_id.toString(),aa.toString(),aa.toString(),aa.toString() };
-            long rowid = dbHelper.insert(tables[0], f2, v);
-            
-//            strRes += rowid + "\n";
-//          }
-//          else
-//          {
-//            /* 餐廳名稱已存在資料庫 */
+//		final String savepath = AndroidLib.getExternalStoreageName(AsyncProgBar.this, null);
+//		
+//		//dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, null, null, version, tables, fieldNames, fieldTypes);
+//		dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, savepath+"mydb.sqlite", null, version, tables, fieldNames, fieldTypes);
+//		 //String f1[] = { "f_id", "f_name" };
+//		 String aa ="3333";
+//         //String[] selectionArgs = { aa.toString() };
+//	    /* SELECT f[] FROM tables[0] */
+//		
+////		
+////          Cursor c = dbHelper.select(tables[0], f1, "f_name=?", selectionArgs, null, null, null);
+////          String strRes = "";
+////          while (c.moveToNext())
+////          {
+////            strRes += c.getString(0) + "\n";
+////          }
+////          
+////          if(strRes == "")
+////          {
+//        	  long ltimebase = SystemClock.uptimeMillis();
+//        	  String s_id = String.valueOf(ltimebase);
+//            //
+//            String f2[] = {  "f_file"};
+//            String v[] = { aa.toString() };
+//            long rowid = dbHelper.insert(tables[0], f2, v);
 //            
-//          }
-          
-          /* 前往編輯功能 */
-          if(dbHelper!=null && dbHelper.getReadableDatabase().isOpen())
-          {
-            dbHelper.close();
-          }		
+////            strRes += rowid + "\n";
+////          }
+////          else
+////          {
+////            
+////            
+////          }
+//          
+//          
+//          if(dbHelper!=null && dbHelper.getReadableDatabase().isOpen())
+//          {
+//            dbHelper.close();
+//          }		
 	}
 
 	@Override
@@ -148,44 +150,15 @@ public class AsyncProgBar extends Activity {
 			//create SQLite
 			//get external store path
 			final String savepath = AndroidLib.getExternalStoreageName(AsyncProgBar.this, null);
-//			
-//			dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, savepath+"demo.sqlite", null, version, tables, fieldNames, fieldTypes);
-//			 String f[] = { "f_id", "f_name" };
-//	         String[] selectionArgs = { "111" };
-//		    /* SELECT f[] FROM tables[0] */
-//			
-//			/* 呼叫select方法搜尋資料表 */
-//	          Cursor c = dbHelper.select(tables[0], f, "f_name=?", selectionArgs, null, null, null);
-//	          String strRes = "";
-//	          while (c.moveToNext())
-//	          {
-//	            strRes += c.getString(0) + "\n";
-//	          }
-//	          
-//	          if(strRes == "")
-//	          {
-//	            /* 資料庫未找到餐廳名稱，新增它 */
-//	            String f2[] = { "f_name", "f_address", "f_cal"};
-//	            String v[] = { "aa", "bb", "cc" };
-//	            long rowid = dbHelper.insert(tables[0], f2, v);
-//	            strRes += rowid + "\n";
-//	          }
-//	          else
-//	          {
-//	            /* 餐廳名稱已存在資料庫 */
-//	            
-//	          }
-//	          
-//	          /* 前往編輯功能 */
-//	          if(dbHelper!=null && dbHelper.getReadableDatabase().isOpen())
-//	          {
-//	            dbHelper.close();
-//	          }
 	          
 		    
 		    //download file
 			try {
-
+				//for db
+				dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, savepath+"mydb.db", null, version, tables, fieldNames, fieldTypes);
+				 String f2[] = {  "f_file"};
+				 String f1[] = {"f_id"};
+				 Log.i("db","open db");
 				//File vSDCard = null;
 				//check sd card is available
 				if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -211,11 +184,21 @@ public class AsyncProgBar extends Activity {
 
 					long total = 0;
 
+					
 					while ((count = input.read(data)) != -1) {
 						total += count;
 						publishProgress("" + (int) ((total * 100) / lenghtOfFile));
 						output.write(data, 0, count);
 						
+						//select cursor
+						 //getBlob
+						 Cursor c = dbHelper.select(tables[0], f1, "f_id=1", null, null, null, null);
+						if(c.getCount()!=0){
+							c.moveToFirst();
+						}
+						 
+						long rowid = dbHelper.insert(tables[0], f2, data);
+						 Log.i("db","insert data");
 						
 					}
 
@@ -228,6 +211,12 @@ public class AsyncProgBar extends Activity {
 
 				Log.d("ImageManager", "Error: " + e);
 
+			}finally{
+		          if(dbHelper!=null && dbHelper.getReadableDatabase().isOpen())
+		          {
+		            dbHelper.close();
+		            Log.i("db","close db");
+		          }		
 			}
 			return null;
 

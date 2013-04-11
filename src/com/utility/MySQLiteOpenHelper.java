@@ -110,6 +110,29 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper
     }
     return db.insert(table, null, cv);
   }
+  /**
+   * 新增資料
+   * 
+   * @param table
+   *          新增資料的table name
+   * @param fields
+   *          新增資料的欄位名稱
+   * @param values
+   *          新增資料的欄位值
+   * @return long row id
+   */  
+  public long insert(String table, String fields[],byte[] image) {
+	    SQLiteDatabase db = this.getWritableDatabase();
+	    /* 將新增的值放入ContentValues */
+	    ContentValues cv = new ContentValues();
+	    for (int i = 0; i < fields.length; i++)
+	    {
+	      cv.put(fields[i], image[i]);
+	    }
+	    return db.insert(table, null, cv);
+	}
+	 
+
 
   /**
    * 刪除資料
