@@ -1,6 +1,7 @@
 package com.example;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -77,7 +78,9 @@ public class AsyncProgBar extends Activity {
 //		}
 	}
 	private void startDownload() {
-		String url = "http://clh.myds.me/sample.avi";
+		//String url = "http://clh.myds.me/sample.avi";//13.54mb
+		//String url = "http://clh.myds.me/video.mp4";//57.35mb
+		String url = "http://clh.myds.me/Learning.pdf";//3.62mb
 		new DownloadFileAsync().execute(url);
 
 //		final String savepath = AndroidLib.getExternalStoreageName(AsyncProgBar.this, null);
@@ -138,6 +141,7 @@ public class AsyncProgBar extends Activity {
 
 	class DownloadFileAsync extends AsyncTask<String, String, String> {
 
+		
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
@@ -151,7 +155,7 @@ public class AsyncProgBar extends Activity {
 			//get external store path
 			final String savepath = AndroidLib.getExternalStoreageName(AsyncProgBar.this, null);
 	          
-		    
+			boolean bFirst = false;
 		    //download file
 			try {
 				//for db
@@ -167,8 +171,9 @@ public class AsyncProgBar extends Activity {
 					//vSDCard = Environment.getExternalStorageDirectory();
 
 					//save file
-					File vFile = new File(savepath
-							+ "downloadTest.avi");
+					//File vFile = new File(savepath+ "downloadTest.avi");
+					//File vFile = new File(savepath+ "downloadTest.mp4");
+					File vFile = new File(savepath+ "downloadTest.pdf");
 
 					URL url = new URL(aurl[0]);
 					URLConnection conexion = url.openConnection();
@@ -179,7 +184,8 @@ public class AsyncProgBar extends Activity {
 
 					InputStream input = new BufferedInputStream(url.openStream());
 					OutputStream output = new FileOutputStream(vFile);
-
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					
 					byte data[] = new byte[1024];
 
 					long total = 0;
@@ -189,16 +195,26 @@ public class AsyncProgBar extends Activity {
 						total += count;
 						publishProgress("" + (int) ((total * 100) / lenghtOfFile));
 						output.write(data, 0, count);
-						
+						baos.write(data,0,count);
 						//select cursor
 						 //getBlob
-						 Cursor c = dbHelper.select(tables[0], f1, "f_id=1", null, null, null, null);
-						if(c.getCount()!=0){
-							c.moveToFirst();
+//						 Cursor c = dbHelper.select(tables[0], f1, "f_id=1", null, null, null, null);
+//						if(c.getCount()!=0){
+//							c.moveToFirst();
+//						}
+						long rowid = 0;
+						if(!bFirst){
+							rowid  = dbHelper.insert(tables[0], f2, baos.toByteArray());
+							Log.i("db","insert data row=>"+rowid);
+							bFirst = true;
+						}else{
+							rowid = dbHelper.update(tables[0], f2, baos.toByteArray(), "f_id=1",null);
+							Log.i("db","replace data row=>"+rowid);
 						}
-						 
-						long rowid = dbHelper.insert(tables[0], f2, data);
-						 Log.i("db","insert data");
+						
+						
+						
+						
 						
 					}
 

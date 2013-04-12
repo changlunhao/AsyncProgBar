@@ -121,17 +121,19 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper
    *          新增資料的欄位值
    * @return long row id
    */  
+  //REPLACE INTO my_table (pk_id, col1) VALUES (5, '123');
   public long insert(String table, String fields[],byte[] image) {
 	    SQLiteDatabase db = this.getWritableDatabase();
 	    /* 將新增的值放入ContentValues */
 	    ContentValues cv = new ContentValues();
 	    for (int i = 0; i < fields.length; i++)
 	    {
-	      cv.put(fields[i], image[i]);
+	      cv.put(fields[i], image);
 	    }
 	    return db.insert(table, null, cv);
 	}
-	 
+
+ 
 
 
   /**
@@ -180,6 +182,19 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper
     }
     return db.update(table, cv, where, whereValue);
   }
+  public int update(String table, String updateFields[],
+	      byte updateValues[], String where, String[] whereValue)
+	  {
+	    SQLiteDatabase db = this.getWritableDatabase();
+
+	    /* 將修改的值放入ContentValues */
+	    ContentValues cv = new ContentValues();
+	    for (int i = 0; i < updateFields.length; i++)
+	    {
+	      cv.put(updateFields[i], updateValues);
+	    }
+	    return db.update(table, cv, where, whereValue);
+	  }  
 
   public String getMessage()
   {
