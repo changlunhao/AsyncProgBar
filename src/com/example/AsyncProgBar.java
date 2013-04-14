@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -83,45 +84,7 @@ public class AsyncProgBar extends Activity {
 		String url = "http://clh.myds.me/Learning.pdf";//3.62mb
 		new DownloadFileAsync().execute(url);
 
-//		final String savepath = AndroidLib.getExternalStoreageName(AsyncProgBar.this, null);
-//		
-//		//dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, null, null, version, tables, fieldNames, fieldTypes);
-//		dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, savepath+"mydb.sqlite", null, version, tables, fieldNames, fieldTypes);
-//		 //String f1[] = { "f_id", "f_name" };
-//		 String aa ="3333";
-//         //String[] selectionArgs = { aa.toString() };
-//	    /* SELECT f[] FROM tables[0] */
-//		
-////		
-////          Cursor c = dbHelper.select(tables[0], f1, "f_name=?", selectionArgs, null, null, null);
-////          String strRes = "";
-////          while (c.moveToNext())
-////          {
-////            strRes += c.getString(0) + "\n";
-////          }
-////          
-////          if(strRes == "")
-////          {
-//        	  long ltimebase = SystemClock.uptimeMillis();
-//        	  String s_id = String.valueOf(ltimebase);
-//            //
-//            String f2[] = {  "f_file"};
-//            String v[] = { aa.toString() };
-//            long rowid = dbHelper.insert(tables[0], f2, v);
-//            
-////            strRes += rowid + "\n";
-////          }
-////          else
-////          {
-////            
-////            
-////          }
-//          
-//          
-//          if(dbHelper!=null && dbHelper.getReadableDatabase().isOpen())
-//          {
-//            dbHelper.close();
-//          }		
+
 	}
 
 	@Override
@@ -156,10 +119,12 @@ public class AsyncProgBar extends Activity {
 			final String savepath = AndroidLib.getExternalStoreageName(AsyncProgBar.this, null);
 	          
 			boolean bFirst = false;
+			SQLiteDatabase db = null;
 		    //download file
 			try {
 				//for db
-				dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, savepath+"mydb.db", null, version, tables, fieldNames, fieldTypes);
+				dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, null/*savepath+"mydb.db"*/, null, version, tables, fieldNames, fieldTypes);//open in Ram
+				//dbHelper = new MySQLiteOpenHelper(AsyncProgBar.this, savepath+"mydb.db", null, version, tables, fieldNames, fieldTypes);//open in sd
 				 String f2[] = {  "f_file"};
 				 String f1[] = {"f_id"};
 				 Log.i("db","open db");
@@ -190,7 +155,8 @@ public class AsyncProgBar extends Activity {
 
 					long total = 0;
 
-					
+					db = dbHelper.getWritableDatabase();
+					db.beginTransaction();
 					while ((count = input.read(data)) != -1) {
 						total += count;
 						publishProgress("" + (int) ((total * 100) / lenghtOfFile));
@@ -202,6 +168,7 @@ public class AsyncProgBar extends Activity {
 //						if(c.getCount()!=0){
 //							c.moveToFirst();
 //						}
+						
 						long rowid = 0;
 						if(!bFirst){
 							rowid  = dbHelper.insert(tables[0], f2, baos.toByteArray());
@@ -217,7 +184,9 @@ public class AsyncProgBar extends Activity {
 						
 						
 					}
-
+					db.setTransactionSuccessful();
+				    
+				    
 					output.flush();
 					output.close();
 					input.close();
@@ -228,6 +197,7 @@ public class AsyncProgBar extends Activity {
 				Log.d("ImageManager", "Error: " + e);
 
 			}finally{
+					db.endTransaction();
 		          if(dbHelper!=null && dbHelper.getReadableDatabase().isOpen())
 		          {
 		            dbHelper.close();

@@ -130,7 +130,12 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper
 	    {
 	      cv.put(fields[i], image);
 	    }
-	    return db.insert(table, null, cv);
+	    long lRtn = 0;
+	    //db.beginTransaction();
+	    lRtn = db.insert(table, null, cv);
+	    //db.setTransactionSuccessful();
+	    //db.endTransaction();
+	    return lRtn;
 	}
 
  
